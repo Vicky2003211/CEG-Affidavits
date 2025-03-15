@@ -1,0 +1,145 @@
+/* Faculty Page Background Styling (Similar to Categories Page) */
+.faculty-bg {
+    position: relative;
+    text-align: center;
+    padding: 60px;
+    padding-top: 120px;
+    color: white; /* Ensures text is visible */
+    min-height: 100vh; /* Full-screen background */
+}
+
+/* Overlay with Blurred Background Image */
+.faculty-bg::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../Assets/bg.png"); /* Replace with your actual image */
+    background-size: cover; /* Cover the entire section */
+    background-position: center; /* Center the image */
+    background-attachment: fixed; /* Parallax effect */
+    filter: blur(6px); /* Soft blur effect */
+    z-index: -1; /* Keep background below content */
+}
+
+/* Faculty Content Container with Semi-White Background */
+.faculty-container {
+    position: relative;
+    z-index: 1; /* Keeps content above the background */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    margin: 40px auto; /* Centers the container horizontally */
+    padding: 30px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.6); /* Semi-white background */
+    backdrop-filter: blur(10px); /* Glassmorphism effect */
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Faculty & Student Cards */
+.faculty-card, .glassmorphism {
+    background:whitesmoke; /* Slightly stronger white */
+    backdrop-filter: blur(4px); /* Ensures content clarity */
+    border-radius: 15px;
+    text-align: left;
+    transition: opacity 0.3s ease-in-out;
+}
+.faculty-card{
+    width: 300px;
+    margin-right: 20px !important;
+}
+
+/* Faculty Icon */
+.faculty-icon {
+    display: block;
+    margin: 0 auto 10px; /* Center icon and add spacing below */
+}
+
+/* Faculty Details Alignment */
+.faculty-details {
+    text-align: left;
+    font-size: 14px;
+}
+
+.faculty-name {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Student Requests Heading */
+.Student-heading {
+    padding: 20px;
+    text-align: center;
+    color: #EDC940;
+    font-weight: bold;
+}
+
+/* Student Requests List */
+.request-item {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    opacity: 0.9;
+    transition: transform 0.2s ease-in-out, 
+                box-shadow 0.2s ease-in-out, 
+                opacity 0.2s ease-in-out;
+}
+
+/* Hover Effect */
+.request-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 1);
+    opacity: 1;
+}
+
+/* Buttons */
+.btn {
+    transition: all 0.3s ease-in-out;
+    border-radius: 8px;
+    padding: 8px 16px;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Badges */
+.badge {
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* Icons */
+.text-primary {
+    color: #2575fc !important;
+}
+
+.text-secondary {
+    color: #6a11cb !important;
+}
+
+.Student-card{
+    margin-left: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 900px) {
+    .faculty-container {
+        width: 90%;
+    }
+}
+
+@media (max-width: 600px) {
+    .faculty-container {
+        width: 95%;
+    }
+}

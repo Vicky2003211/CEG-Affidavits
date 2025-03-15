@@ -1,0 +1,147 @@
+/* General Layout */
+/* General Layout */
+.student-form {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 100vh; /* Adjust for navbar height */
+    padding-top: 80px; /* Ensure content is below navbar */
+    position: relative;
+    
+    /* New Background */
+    background: url("../Assets/bg.png") no-repeat center center/cover; /* Update the image */
+}
+
+/* Background with Blur Effect */
+.student-form::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.4); /* Optional overlay for better contrast */
+    z-index: -1;
+}
+
+
+/* Container */
+.s-container.container-card {
+    max-width: 800px;
+    width: 90%;
+    padding: 20px;
+    position: relative;
+}
+
+/* Glassmorphism Form Card (Scrollable but No Scrollbar) */
+.container-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+
+    /* Set scrollable container */
+    max-height: 400px; /* Adjust height as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+
+    /* Hide scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE & Edge */
+    margin-top: 40px;
+    width: 750px;
+}
+
+/* Hide scrollbar for WebKit browsers */
+.container-card::-webkit-scrollbar {
+    display: none;
+}
+
+/* Card Hover Effect */
+.container-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+
+.Studentform-heading{
+    background: rgba(255, 255, 255, 0.15);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px); 
+    color:#007bff;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* Labels */
+.form-label {
+    font-weight: 600;
+    color: white;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 4px;
+    margin-top: 16px;
+}
+
+/* Input Fields */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+    color: white;
+    transition: all 0.3s ease-in-out;
+    outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Input Focus Effect */
+input:focus, select:focus, textarea:focus {
+    border-color: #00a8ff;
+    box-shadow: 0px 0px 10px rgba(0, 168, 255, 0.5);
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 20%;
+    background: linear-gradient(45deg, #00a8ff, #0062cc);
+    border: none;
+    color: white;
+    font-size: 18px;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    margin-top: 30px;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(45deg, #0062cc, #004a99);
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .s-container {
+        max-width: 85%;
+    }
+
+    .container-card {
+        max-height: 400px; /* Adjust max height for smaller screens */
+    }
+}

@@ -1,0 +1,74 @@
+.dashboard {
+    padding: 85px 60px 60px; /* Adjust padding to match navbar height */
+    color: white;
+    position: relative;
+    min-height: 100vh; /* Ensures full-page coverage */
+}
+
+/* Blurred Background */
+.dashboard::before {
+    content: "";
+    position: fixed; /* Ensures the background covers the full viewport */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Ensures full width coverage */
+    height: 100vh; /* Ensures full height coverage */
+    background-image: url("../Assets/bg.png"); /* Replace with your image path */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Keeps background fixed while scrolling */
+    filter: blur(6px); /* Apply blur only to background */
+    z-index: -1; /* Keeps the background below content */
+}
+
+/* Dashboard Content */
+.dashboard-container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 40px; /* Adjust this value based on your navbar height */
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Ensures exactly 3 items per row */
+    width: 1200px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.certificate-applied{
+    width: 900px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 160px;
+}
+.certificate-card{
+    background: rgba(255, 255, 255, 0.2); /* Light transparent background */
+    backdrop-filter: blur(4px); /* Ensures text clarity */
+    opacity: 0.9;
+}
+
+.dash-cursor-pointer {
+    cursor: pointer;
+  }
+  
+/* Responsive Design */
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(1, 1fr); /* 1 column for mobile */
+    }
+}
