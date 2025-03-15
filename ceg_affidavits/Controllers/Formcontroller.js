@@ -195,7 +195,7 @@ const FARequest = async (req, res) => {
       const { name, categoryName, documentId, uroll_no, categoryId } = request;
 
       // Construct the PDF link (modify the base URL according to your setup)
-      const pdfLink = `http://localhost:5000/auth/files/${documentId}`;
+      const pdfLink = `http://localhost:5000/${documentId}`;
 
       return {
         name,

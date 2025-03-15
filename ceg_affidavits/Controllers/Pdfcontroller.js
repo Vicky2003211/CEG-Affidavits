@@ -10,14 +10,17 @@ const Grid = require("gridfs-stream");
 const conn = mongoose.connection;
 let gfs, gridfsBucket;
 
-// Initialize GridFS when MongoDB is connected
+// ✅ Initialize GridFS when MongoDB connection is open
 conn.once("open", () => {
-  gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, { bucketName: "pdfs" });
-  gfs = Grid(conn.db, mongoose.mongo);
-  gfs.collection("pdfs");
+  if (!gfs) {
+    gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, { bucketName: "pdfs" });
+    gfs = Grid(conn.db, mongoose.mongo);
+    gfs.collection("pdfs");
+    console.log("✅ GridFS Initialized");
+  }
 });
 
-// ✅ Function to Generate Bonafide Certificate PDF
+// ✅ Generate Bonafide Certificate PDF
 const Generate_PDF = async (req, res) => {
   try {
     const { uroll_no, categoryId } = req.body;
@@ -25,6 +28,7 @@ const Generate_PDF = async (req, res) => {
       return res.status(400).json({ error: "Missing required parameters" });
     }
 
+    // 🔍 Fetch form data
     const form = await RequestForm.findOne({ uroll_no, categoryId });
     if (!form) {
       return res.status(404).json({ error: "No form data found" });
@@ -37,11 +41,16 @@ const Generate_PDF = async (req, res) => {
     const filename = `bonafide_${form.uroll_no}_${uuidv4()}.pdf`;
     const documentId = new mongoose.Types.ObjectId();
 
+    // 🔍 Load background image if available
     const backgroundPath = path.join(__dirname, "certificate-bg.jpg");
-    const backgroundBase64 = fs.existsSync(backgroundPath)
-      ? `data:image/jpeg;base64,${fs.readFileSync(backgroundPath).toString("base64")}`
-      : "";
+    let backgroundBase64 = "";
+    if (fs.existsSync(backgroundPath)) {
+      backgroundBase64 = `data:image/jpeg;base64,${fs.readFileSync(backgroundPath).toString("base64")}`;
+    } else {
+      console.warn("⚠️ Warning: Background image not found. Generating PDF without it.");
+    }
 
+    // ✅ HTML Template
     const certificateHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -87,11 +96,26 @@ const Generate_PDF = async (req, res) => {
       </body>
       </html>`;
 
-    const browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
-    });
+    // ✅ Launch Puppeteer
+    let browser;
+    try {
+      browser = await puppeteer.launch({
+        executablePath: process.platform === "win32"
+          ? "C:\\Users\\vicky\\.cache\\puppeteer\\chrome\\win64-134.0.6998.35\\chrome-win64\\chrome.exe"
+          : "/usr/bin/chromium-browser",
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        headless: true,
+      });
 
+      if (!browser) {
+        throw new Error("Puppeteer failed to launch (browser is undefined)");
+      }
+    } catch (err) {
+      console.error("❌ Puppeteer launch error:", err);
+      return res.status(500).json({ error: "Failed to launch Puppeteer." });
+    }
+
+    // ✅ Open a new page
     const page = await browser.newPage();
     await page.setContent(certificateHtml, { waitUntil: "load" });
 
@@ -111,33 +135,23 @@ const Generate_PDF = async (req, res) => {
       try {
         const newPDF = new PDFDocument({ uroll_no, categoryId, documentId });
         await newPDF.save();
-
-        if (!res.headersSent) {
-          return res.status(200).json({
-            success: true,
-            message: "PDF generated and stored successfully",
-            documentId,
-          });
-        }
+        return res.status(200).json({ success: true, message: "PDF stored successfully", documentId });
       } catch (error) {
         console.error("Error saving PDFDocument:", error);
-        if (!res.headersSent) {
-          res.status(500).json({ error: "Failed to store PDF document" });
-        }
+        return res.status(500).json({ error: "Failed to store PDF" });
       }
     });
 
-    await uploadStream.end(pdfBuffer);
-
+    uploadStream.end(pdfBuffer);
   } catch (error) {
     console.error("Error generating PDF:", error);
-    if (!res.headersSent) {
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-// ✅ Function to Retrieve Stored PDF
+
+
+// ✅ Retrieve and Serve PDF
 const Get_PDF = async (req, res) => {
   try {
     const { uroll_no, categoryId } = req.body;
@@ -147,19 +161,16 @@ const Get_PDF = async (req, res) => {
 
     const pdfEntry = await PDFDocument.findOne({ uroll_no, categoryId });
     if (!pdfEntry || !pdfEntry.documentId) {
-      return res.status(404).json({ error: "No PDF found for the given details" });
+      return res.status(404).json({ error: "No PDF found" });
     }
 
     const readStream = gridfsBucket.openDownloadStream(new mongoose.Types.ObjectId(pdfEntry.documentId));
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "inline");
     readStream.pipe(res);
-
   } catch (error) {
     console.error("Error retrieving PDF:", error);
-    if (!res.headersSent) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
