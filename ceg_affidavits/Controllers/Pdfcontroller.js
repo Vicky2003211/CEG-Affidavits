@@ -1,10 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
-const puppeteer = require("puppeteer-core");
+const puppeteer = require("puppeteer");
 const { v4: uuidv4 } = require("uuid");
 const RequestForm = require("../models/RequestForm");
-const PDFDocument = require("../models/PDFdocument"); // Import the model
+const PDFDocument = require("../models/PDFdocument");
 const Grid = require("gridfs-stream");
 
 const conn = mongoose.connection;
@@ -71,13 +71,12 @@ const Generate_PDF = async (req, res) => {
           <p class="content"><strong>TO WHOMSOEVER IT MAY CONCERN</strong></p>
           <br><br>
           <p class="content">
-  This is to certify that <strong>Mr.${form.name.toUpperCase()}</strong> (Roll No: <strong>${form.uroll_no}</strong>),  
-  son of <strong>${form.father_name.toUpperCase()}</strong> and <strong>${form.mother_name.toUpperCase()}</strong>,  
-  is a bonafide student of this institution. He is currently enrolled in the <strong>${form.semester}th</strong>  
-  semester of the <strong>${form.course}</strong> (Full-Time) program for the academic year  
-  <strong>${currentYear}-${nextYear}</strong>.
-</p>
-
+            This is to certify that <strong>Mr.${form.name.toUpperCase()}</strong> (Roll No: <strong>${form.uroll_no}</strong>),  
+            son of <strong>${form.father_name.toUpperCase()}</strong> and <strong>${form.mother_name.toUpperCase()}</strong>,  
+            is a bonafide student of this institution. He is currently enrolled in the <strong>${form.semester}th</strong>  
+            semester of the <strong>${form.course}</strong> (Full-Time) program for the academic year  
+            <strong>${currentYear}-${nextYear}</strong>.
+          </p>
           <br><br>
           <p class="content">This Certificate is issued for <strong>${form.categoryName}</strong> Purpose only.</p>
           <div class="signature-container">
@@ -89,8 +88,8 @@ const Generate_PDF = async (req, res) => {
       </html>`;
 
     const browser = await puppeteer.launch({
-      executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
       headless: "new",
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
     });
 
     const page = await browser.newPage();
@@ -107,22 +106,17 @@ const Generate_PDF = async (req, res) => {
     await browser.close();
 
     const uploadStream = gridfsBucket.openUploadStreamWithId(documentId, filename, { contentType: "application/pdf" });
-    // ✅ Attach 'finish' listener BEFORE calling 'end'
+
     uploadStream.on("finish", async () => {
       try {
-        const newPDF = new PDFDocument({
-          uroll_no,
-          categoryId,
-          documentId: documentId, // ✅ Correct documentId stored
-        });
-
-        await newPDF.save(); // Save to PDFDocument collection
+        const newPDF = new PDFDocument({ uroll_no, categoryId, documentId });
+        await newPDF.save();
 
         if (!res.headersSent) {
           return res.status(200).json({
             success: true,
             message: "PDF generated and stored successfully",
-            documentId: documentId, // ✅ Return correct documentId
+            documentId,
           });
         }
       } catch (error) {
@@ -133,7 +127,6 @@ const Generate_PDF = async (req, res) => {
       }
     });
 
-    // ✅ Now call 'end' after attaching the listener
     await uploadStream.end(pdfBuffer);
 
   } catch (error) {
@@ -144,40 +137,28 @@ const Generate_PDF = async (req, res) => {
   }
 };
 
-
+// ✅ Function to Retrieve Stored PDF
 const Get_PDF = async (req, res) => {
   try {
     const { uroll_no, categoryId } = req.body;
-
-
     if (!uroll_no || !categoryId) {
       return res.status(400).json({ error: "uroll_no and categoryId are required" });
     }
 
     const pdfEntry = await PDFDocument.findOne({ uroll_no, categoryId });
-
     if (!pdfEntry || !pdfEntry.documentId) {
       return res.status(404).json({ error: "No PDF found for the given details" });
     }
 
-    const documentId = pdfEntry.documentId;
-
-    const readStream = gridfsBucket.openDownloadStream(new mongoose.Types.ObjectId(documentId));
+    const readStream = gridfsBucket.openDownloadStream(new mongoose.Types.ObjectId(pdfEntry.documentId));
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "inline");
-
     readStream.pipe(res);
 
-    readStream.on("error", (err) => {
-      console.error("Error retrieving PDF:", err);
-      if (!res.headersSent) {
-        res.status(500).json({ error: "Error streaming PDF" });
-      }
-    });
   } catch (error) {
     console.error("Error retrieving PDF:", error);
     if (!res.headersSent) {
-      return res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: "Internal Server Error" });
     }
   }
 };
