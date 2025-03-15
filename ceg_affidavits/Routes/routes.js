@@ -1,7 +1,7 @@
 // Routes/routes.js
 const express = require("express");
-const { login, register, progress } = require("../controllers/authController");
-const { category } = require("../controllers/categoryController");
+const { login, register, progress } = require("../controllers/AuthController");
+const { category } = require("../controllers/CategoryController");
 const authMiddleware = require("../Middleware/Authmiddleware");
 const { studentRequest, upload, StaffRequest, Pdf, FARequest, FaAccept, HODAccept, AdminAccept } = require("../controllers/Formcontroller");
 const {Generate_PDF, Get_PDF} = require("../Controllers/Pdfcontroller")
