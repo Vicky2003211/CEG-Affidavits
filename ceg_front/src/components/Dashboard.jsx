@@ -5,6 +5,8 @@ import { FaCheckCircle, FaUserGraduate, FaExclamationTriangle, FaDownload, FaEye
 import Navbar from "./Navbar";
 import "../css/Dashboard.css";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL ;
+
 const Certificate = () => {
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +28,7 @@ const Certificate = () => {
       setUserName(user.userName || "Guest");
       setUrollNo(user.rollNo);
 
-      const response = await fetch("http://localhost:5000/auth/progress", {
+      const response = await fetch(`${API_BASE_URL}/auth/progress`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uroll_no: user.rollNo }),
@@ -65,7 +67,7 @@ const Certificate = () => {
 
   const fetchRejections = async (uroll_no, categoryId) => {
     try {
-      const response = await fetch("http://localhost:5000/auth/getRejections", {
+      const response = await fetch(`${API_BASE_URL}/auth/getRejections`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uroll_no, categoryId }),
@@ -88,7 +90,7 @@ const Certificate = () => {
   };
 
   const handlePreview = async (categoryId) => {
-    const response = await fetch("http://localhost:5000/auth/getpdf", {
+    const response = await fetch(`${API_BASE_URL}/auth/getpdf`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ uroll_no, categoryId })
@@ -103,7 +105,7 @@ const Certificate = () => {
   };
 
   const handleDownload = async (categoryId) => {
-    const response = await fetch("http://localhost:5000/auth/getpdf", {
+    const response = await fetch(`${API_BASE_URL}/auth/getpdf`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ uroll_no, categoryId })
@@ -127,7 +129,7 @@ const Certificate = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch("http://localhost:5000/auth/deleteRequest", {
+      const response = await fetch(`${API_BASE_URL}/auth/deleteRequest`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uroll_no, categoryId }), // Send uroll_no and categoryId

@@ -59,11 +59,13 @@ const StudentLoanForm = () => {
     }
   };
 
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const submissionData = new FormData();
-
+  
     Object.keys(formData).forEach((key) => {
       if (key === "document" && formData[key]) {
         submissionData.append("document", formData[key]);
@@ -71,16 +73,19 @@ const StudentLoanForm = () => {
         submissionData.append(key, formData[key]);
       }
     });
-
+  
     submissionData.append("sentTo", "staff");
     submissionData.append("status", "pending");
-
+  
     try {
-      const response = await fetch("http://localhost:5000/auth/upload", {
-        method: "POST",
-        body: submissionData,
-      });
-
+      const response = await fetch(
+        `${API_BASE_URL}/auth/upload`, 
+        {
+          method: "POST",
+          body: submissionData,
+        }
+      );
+  
       if (response.ok) {
         toast.success("Successfully Submitted!");
         setTimeout(() => {
@@ -95,6 +100,7 @@ const StudentLoanForm = () => {
       toast.error("Error submitting form!");
     }
   };
+  
 
   return (
     <div className="student-form">

@@ -26,14 +26,17 @@ const Categories = () => {
       navigate("/login");
     }
 
+    const API_URL = process.env.REACT_APP_API_BASE_URL;
+
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/auth/categories");
+        const response = await axios.get(`${API_URL}/auth/categories`);
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
     };
+
 
     fetchCategories();
   }, [navigate]);

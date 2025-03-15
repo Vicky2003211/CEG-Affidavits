@@ -25,29 +25,32 @@ const Login = () => {
     }
   }, []);
 
+  const URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-      const response = await axios.post("http://localhost:5000/auth/login", {
+      const response = await axios.post(`${URL}/auth/login`, {
         uroll_no,
         password,
       });
-
+  
       if (response.data.success) {
         const { token, payload } = response.data;
-
+  
         // Save token & user data in localStorage
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(payload));
-
+  
         setError("");
-
+  
         // Decode JWT to get expiration time
         const decodedToken = jwtDecode(token);
-        setAutoLogout(decodedToken.exp);
-
+        setAutoLogout(decodedToken.exp * 1000); // Convert to milliseconds
+  
         // Redirect based on role
         if (payload.Role === "student") {
           navigate("/categories");
@@ -63,19 +66,22 @@ const Login = () => {
       setLoading(false);
     }
   };
-
+  
   const setAutoLogout = (exp) => {
-    const timeLeft = exp * 1000 - Date.now();
-    setTimeout(() => {
-      handleLogout();
-    }, timeLeft);
+    const timeLeft = exp - Date.now(); // Ensure it's in milliseconds
+    if (timeLeft > 0) {
+      setTimeout(handleLogout, timeLeft);
+    } else {
+      handleLogout(); // Token already expired
+    }
   };
-
+  
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
   };
+  
 
   return (
     <div className="login-container">

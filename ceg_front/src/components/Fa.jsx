@@ -11,6 +11,8 @@ import {
 import "../css/Fa.css";
 import FNavbar from "./FacultyNavBar";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 const Facultyadvisor = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user ? user.Role : null;
@@ -45,7 +47,7 @@ const Facultyadvisor = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/auth/fetch", {
+        const response = await fetch(`${API_BASE_URL}/auth/fetch`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -79,13 +81,13 @@ const Facultyadvisor = () => {
     let nextSentTo = "";
 
     if (role === "staff") {
-      endpoint = "http://localhost:5000/auth/updateFa";
+      endpoint = `${API_BASE_URL}/auth/updateFa`;
       nextSentTo = "HOD";
     } else if (role === "HOD") {
-      endpoint = "http://localhost:5000/auth/updateHOD";
+      endpoint = `${API_BASE_URL}/auth/updateHOD`;
       nextSentTo = "Admin";
     } else if (role === "Admin") {
-      endpoint = "http://localhost:5000/auth/adminaccept";
+      endpoint = `${API_BASE_URL}/auth/adminaccept`;
       nextSentTo = "Done"; // Ensure "Done" is explicitly set for admin
     } else {
       console.error("Invalid role:", role);
@@ -130,7 +132,7 @@ const Facultyadvisor = () => {
   
     try {
       console.log(faculty.roleTitle)
-      const response = await fetch("http://localhost:5000/auth/rejectRequest", {
+      const response = await fetch(`${API_BASE_URL}/auth/rejectRequest`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
