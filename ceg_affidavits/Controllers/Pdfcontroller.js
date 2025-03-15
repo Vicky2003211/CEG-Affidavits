@@ -100,13 +100,11 @@ const Generate_PDF = async (req, res) => {
     let browser;
     try {
       browser = await puppeteer.launch({
-        executablePath: process.platform === "win32"
-          ? "C:\\Users\\vicky\\.cache\\puppeteer\\chrome\\win64-134.0.6998.35\\chrome-win64\\chrome.exe"
-          : "/usr/bin/chromium-browser",
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        headless: true,
+        headless: "new",
       });
-
+    
       if (!browser) {
         throw new Error("Puppeteer failed to launch (browser is undefined)");
       }
@@ -114,11 +112,11 @@ const Generate_PDF = async (req, res) => {
       console.error("❌ Puppeteer launch error:", err);
       return res.status(500).json({ error: "Failed to launch Puppeteer." });
     }
-
+    
     // ✅ Open a new page
     const page = await browser.newPage();
     await page.setContent(certificateHtml, { waitUntil: "load" });
-
+    
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
@@ -126,8 +124,9 @@ const Generate_PDF = async (req, res) => {
       height: "250mm",
       margin: { top: 0, right: 0, bottom: 0, left: 0 },
     });
-
+    
     await browser.close();
+    
 
     const uploadStream = gridfsBucket.openUploadStreamWithId(documentId, filename, { contentType: "application/pdf" });
 
