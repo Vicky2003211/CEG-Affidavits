@@ -10,7 +10,7 @@ const Grid = require("gridfs-stream");
 const conn = mongoose.connection;
 let gfs, gridfsBucket;
 
-// ✅ Initialize GridFS when MongoDB connection is open
+// ✅ Initialize GridFS
 conn.once("open", () => {
   if (!gfs) {
     gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, { bucketName: "pdfs" });
@@ -96,34 +96,33 @@ const Generate_PDF = async (req, res) => {
       </body>
       </html>`;
 
-    // ✅ Launch Puppeteer
+    // ✅ Launch Puppeteer (Works on Render)
     let browser;
-try {
-  browser = await puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome-stable",
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-gpu",
-      "--disable-dev-shm-usage",
-      "--single-process"
-    ],
-    headless: "new",
-  });
+    try {
+      browser = await puppeteer.launch({
+        headless: "new",
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--single-process",
+        ],
+        dumpio: true, // Helps debug issues
+      });
 
-  if (!browser) {
-    throw new Error("Puppeteer failed to launch (browser is undefined)");
-  }
-} catch (err) {
-  console.error("❌ Puppeteer launch error:", err);
-  return res.status(500).json({ error: "Failed to launch Puppeteer." });
-}
+      if (!browser) {
+        throw new Error("Puppeteer failed to launch (browser is undefined)");
+      }
+    } catch (err) {
+      console.error("❌ Puppeteer launch error:", err);
+      return res.status(500).json({ error: "Failed to launch Puppeteer." });
+    }
 
-    
-    // ✅ Open a new page
+    // ✅ Generate PDF
     const page = await browser.newPage();
     await page.setContent(certificateHtml, { waitUntil: "load" });
-    
+
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
@@ -131,10 +130,10 @@ try {
       height: "250mm",
       margin: { top: 0, right: 0, bottom: 0, left: 0 },
     });
-    
-    await browser.close();
-    
 
+    await browser.close();
+
+    // ✅ Upload to MongoDB (GridFS)
     const uploadStream = gridfsBucket.openUploadStreamWithId(documentId, filename, { contentType: "application/pdf" });
 
     uploadStream.on("finish", async () => {
@@ -154,6 +153,7 @@ try {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 
 
