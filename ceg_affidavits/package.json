@@ -5,9 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "install": "apt-get update && apt-get install -y wget && npm install",
-    "postinstall": "apt-get install -y google-chrome-stable || true"
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
