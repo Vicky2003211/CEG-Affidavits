@@ -98,20 +98,27 @@ const Generate_PDF = async (req, res) => {
 
     // ✅ Launch Puppeteer
     let browser;
-    try {
-      browser = await puppeteer.launch({
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        headless: "new",
-      });
-    
-      if (!browser) {
-        throw new Error("Puppeteer failed to launch (browser is undefined)");
-      }
-    } catch (err) {
-      console.error("❌ Puppeteer launch error:", err);
-      return res.status(500).json({ error: "Failed to launch Puppeteer." });
-    }
+try {
+  browser = await puppeteer.launch({
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome-stable",
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-gpu",
+      "--disable-dev-shm-usage",
+      "--single-process"
+    ],
+    headless: "new",
+  });
+
+  if (!browser) {
+    throw new Error("Puppeteer failed to launch (browser is undefined)");
+  }
+} catch (err) {
+  console.error("❌ Puppeteer launch error:", err);
+  return res.status(500).json({ error: "Failed to launch Puppeteer." });
+}
+
     
     // ✅ Open a new page
     const page = await browser.newPage();
