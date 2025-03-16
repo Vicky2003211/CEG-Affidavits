@@ -195,7 +195,8 @@ const FARequest = async (req, res) => {
       const { name, categoryName, documentId, uroll_no, categoryId } = request;
 
       // Construct the PDF link (modify the base URL according to your setup)
-      const pdfLink = `http://localhost:5000/${documentId}`;
+      const BASE_URL = "https://ceg-affidavits-backend.onrender.com"; 
+      const pdfLink = `${BASE_URL}/auth/files/${documentId}`;
 
       return {
         name,

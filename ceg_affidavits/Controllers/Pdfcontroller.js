@@ -1,11 +1,11 @@
-const fs = require("fs");
-const path = require("path");
 const mongoose = require("mongoose");
 const PDFDocument = require("pdfkit");
 const { v4: uuidv4 } = require("uuid");
 const RequestForm = require("../models/RequestForm");
 const PDFStorage = require("../models/PDFdocument");
 const Grid = require("gridfs-stream");
+const fs = require("fs");
+const path = require("path");
 
 const conn = mongoose.connection;
 let gfs, gridfsBucket;
@@ -58,28 +58,43 @@ const Generate_PDF = async (req, res) => {
       });
     });
 
-    // ✅ Draw Certificate Content
+
+    
+    // Path to the background image (Ensure this file exists)
+    const backgroundPath = path.join(__dirname, "certificate-bg.png");
+
+
+
+    
+    // ✅ Add Background Image (Make sure the image exists in your project)
+    doc.image(backgroundPath, 0, 0, { width: doc.page.width, height: doc.page.height });
+
+
+    doc.moveDown(12);
+    
     doc.fontSize(24).font("Times-Bold").text("ANNA UNIVERSITY, CEG", { align: "center" });
     doc.moveDown(2);
     doc.fontSize(18).text("Bonafide Certificate", { align: "center" });
     doc.moveDown(2);
     doc.fontSize(14).text("TO WHOMSOEVER IT MAY CONCERN", { align: "center" });
     doc.moveDown(1);
-
+    
     doc.fontSize(12).text(
       `This is to certify that Mr. ${form.name.toUpperCase()} (Roll No: ${form.uroll_no}),` +
       ` son of ${form.father_name.toUpperCase()} and ${form.mother_name.toUpperCase()},` +
       ` is a bonafide student of this institution. He is currently enrolled in` +
       ` the ${form.semester}th semester of the ${form.course} (Full-Time) program.`
     );
-
+    
     doc.moveDown(1);
     doc.fontSize(12).text(`This Certificate is issued for ${form.categoryName} Purpose only.`);
-    doc.moveDown(2);
+    doc.moveDown(6);
     
+
+    doc.moveDown(4);
     doc.fontSize(14).text("DEAN", { align: "right" });
     doc.fontSize(12).text("(Signature & Seal of the Dean)", { align: "right" });
-
+    
     doc.end();
   } catch (error) {
     console.error("Error generating PDF:", error);
