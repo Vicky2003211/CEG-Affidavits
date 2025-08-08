@@ -68,7 +68,7 @@ Each user role has specific access and responsibilities to manage the certificat
 ```bash
 cd ceg_affidavits
 npm install
-npm run dev
+nodemon start
 ```
 
 ### Frontend Setup
@@ -76,27 +76,39 @@ npm run dev
 ```bash
 cd ceg_front
 npm install
-npm run dev
+npm start
 ```
 
 --⚠️ Ensure you configure .env files for both frontend and backend to store sensitive data like API keys, MongoDB URI, JWT secret, etc.
 
+
+## 🌍 Deployment
+
+This project is live and accessible on Render:
+
+🔗 **Live URL:** [https://your-app-name.onrender.com](https://ceg-affidavits.onrender.com/)
+
+> ⚠️ Please allow a few seconds for the backend to spin up if inactive (Render free tier auto-sleeps apps).
+
+
 ## Sample Datas For Login
 
 ### Student
--Roll Number - S001
--Password - 1234
+Roll Number - S001
+Password - 1234
 
 ### Faculty Advisor
--Roll Number - T001
--Password - 1234
+Roll Number - T001
+Password - 1234
 
 ### HOD
--Roll Number - H001
--Password - 1234
+Roll Number - H001
+Password - 1234
 
 ### Admin
--Roll Number - A001
--Password - 1234
+Roll Number - A001
+Password - 1234
+
+
 
 
