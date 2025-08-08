@@ -74,7 +74,7 @@ npm run dev
 ### Frontend Setup
 
 ```bash
-cd client
+cd ceg_front
 npm install
 npm run dev
 ```
