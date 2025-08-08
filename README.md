@@ -86,7 +86,7 @@ npm start
 
 This project is live and accessible on Render:
 
-🔗 **Live URL:** [https://your-app-name.onrender.com](https://ceg-affidavits.onrender.com/)
+🔗 **Live URL:** [https://ceg-affidavits.onrender.com/](https://ceg-affidavits.onrender.com/)
 
 > ⚠️ Please allow a few seconds for the backend to spin up if inactive (Render free tier auto-sleeps apps).
 
