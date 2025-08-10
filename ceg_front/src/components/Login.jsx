@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import "../css/Login.css";
+import documentation from "../Assets/documentation.pdf";
 
 const Login = () => {
   const [uroll_no, setURollNo] = useState("");
@@ -31,26 +32,26 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
       const response = await axios.post(`${URL}/auth/login`, {
         uroll_no,
         password,
       });
-  
+
       if (response.data.success) {
         const { token, payload } = response.data;
-  
+
         // Save token & user data in localStorage
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(payload));
-  
+
         setError("");
-  
+
         // Decode JWT to get expiration time
         const decodedToken = jwtDecode(token);
         setAutoLogout(decodedToken.exp * 1000); // Convert to milliseconds
-  
+
         // Redirect based on role
         if (payload.Role === "student") {
           navigate("/categories");
@@ -66,7 +67,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   const setAutoLogout = (exp) => {
     const timeLeft = exp - Date.now(); // Ensure it's in milliseconds
     if (timeLeft > 0) {
@@ -75,13 +76,13 @@ const Login = () => {
       handleLogout(); // Token already expired
     }
   };
-  
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
   };
-  
+
 
   return (
     <div className="login-container">
@@ -114,9 +115,22 @@ const Login = () => {
           <a href="#">Forgot Password?</a>
         </div>
 
+        
+
         <button className="login-button" onClick={handleLogin} disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
+
+        <div className="documentation-link">
+          <a
+            href={documentation}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="documentation-button"
+          >
+           Documentation
+          </a>
+        </div>
       </div>
     </div>
   );
